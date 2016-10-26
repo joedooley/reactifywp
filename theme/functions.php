@@ -3,5 +3,5 @@
 define( 'REACTIFYPHP_VERSION',      '1.0' );
 
 // Setup theme
-require_once __DIR__ . 'includes/theme-setup.php';
-\ReactifyPHP\ThemeSetup\setup();
+require_once __DIR__ . '/includes/theme-setup.php';
+\ReactifyWP\ThemeSetup\setup();

@@ -8,7 +8,6 @@ namespace ReactifyWP\ThemeSetup;
  */
 function setup() {
 	add_action( 'after_setup_theme', __NAMESPACE__  . '\i18n' );
-	add_action( 'wp_head', __NAMESPACE__  . '\header_meta' );
 	add_action( 'wp_enqueue_scripts', __NAMESPACE__  . '\scripts' );
 	add_action( 'wp_enqueue_scripts',  __NAMESPACE__  . '\styles' );
 }
