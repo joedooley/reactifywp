@@ -1,46 +1,28 @@
 'use strict';
 
 import React from 'react';
+import NavMenu from './NavMenu.jsx';
 
 class Footer extends React.Component {
 	render() {
 		return (
-			<footer id="colophon" class="site-footer" role="contentinfo">
-				<?php if ( has_nav_menu( 'primary' ) ) : ?>
-					<nav class="main-navigation" role="navigation" aria-label="Footer Primary Menu">
-						<?php
-							wp_nav_menu( array(
-								'theme_location' => 'primary',
-								'menu_class'     => 'primary-menu',
-							 ) );
-						?>
-					</nav>
-				<?php endif; ?>
+			<footer id="colophon" className="site-footer" role="contentinfo">
 
-				<?php if ( has_nav_menu( 'social' ) ) : ?>
-					<nav class="social-navigation" role="navigation" aria-label="Footer Social Links Menu">
-						<?php
-							wp_nav_menu( array(
-								'theme_location' => 'social',
-								'menu_class'     => 'social-links-menu',
-								'depth'          => 1,
-								'link_before'    => '<span class="screen-reader-text">',
-								'link_after'     => '</span>',
-							) );
-						?>
+				{PHP.app.$nav_menus.primary ?
+					<nav className="main-navigation" role="navigation" aria-label="Footer Primary Menu">
+						<NavMenu className="primary-menu" location="primary" />
 					</nav>
-				<?php endif; ?>
+				: '' }
 
-				<div class="site-info">
-					<?php
-						/**
-						 * Fires before the twentysixteen footer text for footer customization.
-						 *
-						 * @since Twenty Sixteen 1.0
-						 */
-						do_action( 'twentysixteen_credits' );
-					?>
-					<span class="site-title"><a href={PHP.app.$constants.home_url} rel="home">{PHP.app.$constants.bloginfo_name}</a></span>
+				{PHP.app.$nav_menus.social ?
+					<nav className="social-navigation" role="navigation" aria-label="Footer Social Links Menu">
+						<NavMenu className="social-links-menu" location="social" />
+					</nav>
+				: '' }
+
+				<div className="site-info">
+					{PHP.app.$template_tags.twentysixteen_credits}
+					<span className="site-title"><a href={PHP.app.$constants.home_url} rel="home">{PHP.app.$constants.bloginfo_name}</a></span>
 					<a href="https://wordpress.org">Proudly powered by WordPress</a>
 				</div>
 			</footer>

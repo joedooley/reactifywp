@@ -17,7 +17,6 @@ module.exports = {
 		]
 	},
     stats: {
-        // Nice colored output
         colors: true
     }
 };

@@ -2,42 +2,43 @@
 
 import React from 'react';
 import NavMenu from './NavMenu.jsx';
-var utils = require('util');
+var util = require('util');
 
 class Header extends React.Component {
 	render() {
-		//print(utils.inspect(PHP.app.$nav_menus));
 		return (
 			<div>
-				<a class="skip-link screen-reader-text" href="#content">Skip to content</a>
+				<a className="skip-link screen-reader-text" href="#content">Skip to content</a>
 
-				<header id="masthead" class="site-header" role="banner">
-					<div class="site-header-main">
-						<div class="site-branding">
+				<header id="masthead" className="site-header" role="banner">
+					<div className="site-header-main">
+						<div className="site-branding">
 							<div dangerouslySetInnerHTML={{__html: PHP.app.$template_tags.twentysixteen_the_custom_logo}}></div>
 
-							{/*<?php if ( is_front_page() && is_home() ) : ?>
+							{'home' === PHP.app.$context.route.type ?
 								<h1 class="site-title"><a href={PHP.app.$constants.home_url} rel="home">{PHP.app.$constants.bloginfo_name}</a></h1>
-							<?php else : ?>
-								<p class="site-title"><a href={PHP.app.$constants.home_url} rel="home">{PHP.app.$constants.bloginfo_name}</a></p>
+							:
+								<div>
+									<p class="site-title"><a href={PHP.app.$constants.home_url} rel="home">{PHP.app.$constants.bloginfo_name}</a></p>
 							
-								<p class="site-description">{PHP.app.$constants.bloginfo_description}</p>
-							<?php endif; ?>*/}
+									<p class="site-description">{PHP.app.$constants.bloginfo_description}</p>
+								</div>
+							}
 						</div>
 
 						{PHP.app.$nav_menus.primary || PHP.app.$nav_menus.social ?
 							<div>
-								<button id="menu-toggle" class="menu-toggle">Menu</button>
+								<button id="menu-toggle" className="menu-toggle">Menu</button>
 
-								<div id="site-header-menu" class="site-header-menu">
+								<div id="site-header-menu" className="site-header-menu">
 									{PHP.app.$nav_menus.primary ?
-										<nav id="site-navigation" class="main-navigation" role="navigation" aria-label="Primary Menu">
+										<nav id="site-navigation" className="main-navigation" role="navigation" aria-label="Primary Menu">
 											<NavMenu className="primary-menu" location="primary" />
 										</nav>
 									: '' }
 
 									{PHP.app.$nav_menus.social ?
-										<nav id="social-navigation" class="social-navigation" role="navigation" aria-label="Social Links Menu">
+										<nav id="social-navigation" className="social-navigation" role="navigation" aria-label="Social Links Menu">
 											<NavMenu className="social-links-menu" location="social" />
 										</nav>
 									: '' }

@@ -19,6 +19,10 @@ ReactifyWP::instance()->register_template_tag( 'twentysixteen_the_custom_logo', 
 	}
 } );
 
+ReactifyWP::instance()->register_template_tag( 'twentysixteen_credits', function() {
+	do_action( 'twentysixteen_credits' );
+} );
+
 if ( ! function_exists( 'twentysixteen_entry_meta' ) ) :
 /**
  * Prints HTML with meta information for the categories, tags.

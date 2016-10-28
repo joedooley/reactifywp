@@ -131,12 +131,47 @@ class ReactifyWP {
 
 	public function setup() {
 		$this->v8 = new \V8Js();
-		$this->v8->app = new stdClass();
+		$this->v8->app = new stdClass(); // v8js didn't like an array here :(
 		$this->v8->app->template_tags = [];
 		$this->v8->app->constants = [];
 		$this->v8->app->nav_menus = [];
+		$this->v8->app->context = [];
 
 		add_action( 'after_setup_theme', array( $this, 'register_menus' ), 11 );
+		add_action( 'reactifywp_render', array( $this, 'construct_route' ), 11 );
+	}
+
+	public function construct_route() {
+		$route = [
+			'type'        => null,
+			'object_id'   => null,
+		];
+
+		if ( is_home() || is_front_page() ) {
+
+			if ( is_home() ) {
+				$route['type'] = 'home';
+			} else {
+				$route['type'] = 'front_page';
+			}
+		} else {
+			$object = get_queried_object();
+
+			if ( is_single() ) {
+				$route['type'] = $object->post_type;
+				$route['object_id'] = $object->ID;
+			} else {
+				if ( is_author() ) {
+					$route['type'] = 'author';
+				} elseif ( is_post_type() ) {
+					$route['type'] = $object->name;
+				} elseif ( is_tax() ) {
+					$route['type'] = $object->taxonomy;
+				}
+			}
+		}
+
+		$this->v8->app->context['route'] = $route;
 	}
 
 	public function register_menus() {
@@ -148,11 +183,10 @@ class ReactifyWP {
 			$items = wp_get_nav_menu_items( $menu_id );
 
 			$ref_map = [];
-
 			$menu = [];
 
 			foreach ( $items as $item_key => $item ) {
-				$menu_item = new stdClass();
+				$menu_item = new stdClass(); // We use a class so we can modify objects in place
 				$menu_item->url = $item->url;
 				$menu_item->title = apply_filters( 'the_title', $item->title, $item->ID );
 				$menu_item->children = [];

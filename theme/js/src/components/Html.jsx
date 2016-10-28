@@ -3,6 +3,7 @@
 import React from 'react';
 import Body from './Body.jsx';
 import Header from './Header.jsx';
+import Footer from './Footer.jsx';
 
 class Html extends React.Component {
     render() {
@@ -19,6 +20,8 @@ class Html extends React.Component {
 
 		            		<div id="content" className="site-content">
 		            		</div>
+
+		            		<Footer />
 		            	</div>
 		            </div>
 
