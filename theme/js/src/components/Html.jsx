@@ -12,12 +12,12 @@ class Html extends React.Component {
 	            </head>
 	            <body className={PHP.app.$template_tags.get_body_class}>
 
-					<div id="page" class="site">
-						<div class="site-inner">
+					<div id="page" className="site">
+						<div className="site-inner">
 
 		            		<Header />
 
-		            		<div id="content" class="site-content">
+		            		<div id="content" className="site-content">
 		            		</div>
 		            	</div>
 		            </div>

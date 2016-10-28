@@ -6,7 +6,7 @@ var utils = require('util');
 
 class Header extends React.Component {
 	render() {
-		print(utils.inspect(PHP.app.$nav_menus));
+		//print(utils.inspect(PHP.app.$nav_menus));
 		return (
 			<div>
 				<a class="skip-link screen-reader-text" href="#content">Skip to content</a>
@@ -25,7 +25,7 @@ class Header extends React.Component {
 							<?php endif; ?>*/}
 						</div>
 
-						{/*PHP.app.$nav_menus.primary || PHP.app.$nav_menus.social ?
+						{PHP.app.$nav_menus.primary || PHP.app.$nav_menus.social ?
 							<div>
 								<button id="menu-toggle" class="menu-toggle">Menu</button>
 
@@ -43,7 +43,7 @@ class Header extends React.Component {
 									: '' }
 								</div>
 							</div>
-						: '' */}
+						: '' }
 					</div>
 
 					{/*<?php if ( get_header_image() ) : ?>

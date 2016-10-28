@@ -19,8 +19,20 @@ class Bridge_Walker_Nav_Menu extends Walker_Nav_Menu {
 		$classes = apply_filters( 'nav_menu_css_class', array_filter( $item->classes ), $item, $args, $depth );
 
 		return array(
+			'id'          => absint( $item->ID ),
+			'order'       => (int) $item->menu_order,
+			'parent'      => absint( $item->menu_item_parent ),
 			'title'       => $title,
 			'url'         => $item->url,
+			'attr'        => $item->attr_title,
+			'target'      => $item->target,
+			'classes'     => $classes,
+			'xfn'         => $item->xfn,
+			'description' => $item->description,
+			'object_id'   => absint( $item->object_id ),
+			'object'      => $item->object,
+			'type'        => $item->type,
+			'type_label'  => $item->type_label,
 			'children'    => array(),
 		);
 	}
@@ -133,8 +145,29 @@ class ReactifyWP {
 		$menus = get_nav_menu_locations();
 
 		foreach ( $menus as $location => $menu_id ) {
+			$items = wp_get_nav_menu_items( $menu_id );
 
-			$this->v8->app->nav_menus[ $location ] = $walker->walk( wp_get_nav_menu_items( $menu_id ), 0 );
+			$ref_map = [];
+
+			$menu = [];
+
+			foreach ( $items as $item_key => $item ) {
+				$menu_item = new stdClass();
+				$menu_item->url = $item->url;
+				$menu_item->title = apply_filters( 'the_title', $item->title, $item->ID );
+				$menu_item->children = [];
+
+				if ( empty( $item->menu_item_parent ) ) {
+					$index = ( empty( $menu ) ) ? 0 : count( $menu );
+					$menu[ $index ] = $menu_item;
+
+					$ref_map[ $item->ID ] = $menu_item;
+				} else {
+					$ref_map[ $item->menu_item_parent ]->children[] = $menu_item;
+				}
+			}
+
+			$this->v8->app->nav_menus[ $location ] = $menu;
 		}
 	}
 
