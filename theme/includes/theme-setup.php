@@ -50,8 +50,8 @@ function styles( $debug = false ) {
 
 	wp_enqueue_style(
 		'reactifywp',
-		WPTHEME_URL . "/assets/css/wp-theme{$min}.css",
+		get_stylesheet_directory_uri() . "/assets/css/wp-theme{$min}.css",
 		array(),
-		WPTHEME_VERSION
+		REACTIFYWP_VERSION
 	);
 }

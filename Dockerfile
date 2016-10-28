@@ -3,9 +3,9 @@ FROM virusvn/docker-centos-v8js:nginx-php-fpm
 RUN yum install -y php-mysqli vim
 
 RUN cd /tmp \
-	&& curl -LO http://wordpress.org/latest.tar.gz \
-	&& tar xvzf /tmp/latest.tar.gz -C /var/www/html --strip-components=1 \
-	&& rm /tmp/latest.tar.gz
+&& curl -LO http://wordpress.org/latest.tar.gz \
+&& tar xvzf /tmp/latest.tar.gz -C /var/www/html --strip-components=1 \
+&& rm /tmp/latest.tar.gz
 
 COPY start.sh /usr/local/bin/
 COPY nginx/wordpress.conf /etc/nginx/conf.d

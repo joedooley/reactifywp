@@ -1,1 +1,2 @@
-hey
+<?php
+\ReactifyWP\App::instance()->render();
