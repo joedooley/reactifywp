@@ -2,7 +2,15 @@
 
 import React from 'react';
 
-class Menu extends React.Component {
+class NavLink extends React.Component {
+	render() {
+		<a href={this.props.url}>
+			{this.props.title}
+		</a>
+	}
+}
+
+class NavMenu extends React.Component {
     render() {
     	function processMenuItem(menuItem) {
     		let classes = 'menu-item';
@@ -32,4 +40,4 @@ class Menu extends React.Component {
     }
 }
 
-export default Menu;
+export default NavMenu;
