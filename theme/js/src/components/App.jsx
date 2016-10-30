@@ -1,9 +1,8 @@
 'use strict';
 
 import React from 'react';
-import { bindActionCreators } from 'redux'
-import { connect } from 'react-redux'
-import Body from './Body.jsx';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
 import River from './River.jsx';
 import Single from './Single.jsx';
 import Header from './Header.jsx';
@@ -13,6 +12,7 @@ var util = require('util');
 
 class App extends React.Component {
     render() {
+
     	let Content = River;
 
     	if ('single' === this.props.route.type) {
@@ -21,9 +21,9 @@ class App extends React.Component {
 
         return (
             <html>
-	            <head dangerouslySetInnerHTML={{__html: PHP.app.$template_tags.wp_head}}>
+	            <head dangerouslySetInnerHTML={{__html: PHP.context.$template_tags.wp_head}}>
 	            </head>
-	            <body className={PHP.app.$template_tags.get_body_class}>
+	            <body className={PHP.context.$template_tags.get_body_class}>
 
 					<div id="page" className="site">
 						<div className="site-inner">
@@ -31,7 +31,7 @@ class App extends React.Component {
 		            		<Header route={this.props.route} />
 
 		            		<div id="content" className="site-content">
-		            			<Content />
+		            			<Content posts={this.props.posts} />
 		            		</div>
 
 		            		<Footer route={this.props.route} />
@@ -39,7 +39,7 @@ class App extends React.Component {
 		            </div>
 
 
-	                <div dangerouslySetInnerHTML={{__html: PHP.app.$template_tags.wp_footer}}></div>
+	                <div dangerouslySetInnerHTML={{__html: PHP.context.$template_tags.wp_footer}}></div>
 	            </body>
             </html>
         );

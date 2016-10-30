@@ -13,24 +13,21 @@ ReactifyWP::instance()->register_template_tag( 'wp_footer', function() {
 } );
 
 ReactifyWP::instance()->register_template_tag( 'get_body_class', function() {
-	return get_body_class();
+	body_class();
 } );
 
-/**
- * Constants
- */
-ReactifyWP::instance()->register_constant( 'home_url', function() {
-	return home_url();
+ReactifyWP::instance()->register_template_tag( 'home_url', function() {
+	echo home_url();
 } );
 
-ReactifyWP::instance()->register_constant( 'bloginfo_name', function() {
-	return get_bloginfo( 'name' );
+ReactifyWP::instance()->register_template_tag( 'bloginfo_name', function() {
+	bloginfo( 'name' );
 } );
 
-ReactifyWP::instance()->register_constant( 'bloginfo_description', function() {
-	return get_bloginfo( 'description' );
+ReactifyWP::instance()->register_template_tag( 'bloginfo_description', function() {
+	bloginfo( 'description' );
 } );
 
-ReactifyWP::instance()->register_constant( 'header_image', function() {
-	return header_image();
+ReactifyWP::instance()->register_template_tag( 'header_image', function() {
+	echo header_image();
 } );

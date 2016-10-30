@@ -9,15 +9,36 @@
  * @since Twenty Sixteen 1.0
  */
 
-ReactifyWP::instance()->register_constant( 'twentysixteen_custom_header_sizes', function() {
-	return apply_filters( 'twentysixteen_custom_header_sizes', '(max-width: 709px) 85vw, (max-width: 909px) 81vw, (max-width: 1362px) 88vw, 1200px' );
-}, 'after_theme_setup' );
+ReactifyWP::instance()->register_template_tag( 'twentysixteen_custom_header_sizes', function() {
+	echo apply_filters( 'twentysixteen_custom_header_sizes', '(max-width: 709px) 85vw, (max-width: 909px) 81vw, (max-width: 1362px) 88vw, 1200px' );
+}, true, 'after_theme_setup' );
 
 ReactifyWP::instance()->register_template_tag( 'twentysixteen_the_custom_logo', function() {
 	if ( function_exists( 'the_custom_logo' ) ) {
 		the_custom_logo();
 	}
 } );
+
+ReactifyWP::instance()->register_template_tag( 'twentysixteen_post_thumbnail', function() {
+	if ( post_password_required() || is_attachment() || ! has_post_thumbnail() ) {
+		return;
+	}
+
+	if ( is_singular() ) :
+	?>
+
+	<div class="post-thumbnail">
+		<?php the_post_thumbnail(); ?>
+	</div><!-- .post-thumbnail -->
+
+	<?php else : ?>
+
+	<a class="post-thumbnail" href="<?php the_permalink(); ?>" aria-hidden="true">
+		<?php the_post_thumbnail( 'post-thumbnail', array( 'alt' => the_title_attribute( 'echo=0' ) ) ); ?>
+	</a>
+
+	<?php endif; // End is_singular()
+}, false );
 
 ReactifyWP::instance()->register_template_tag( 'twentysixteen_credits', function() {
 	do_action( 'twentysixteen_credits' );
@@ -124,38 +145,6 @@ function twentysixteen_entry_taxonomies() {
 }
 endif;
 
-if ( ! function_exists( 'twentysixteen_post_thumbnail' ) ) :
-/**
- * Displays an optional post thumbnail.
- *
- * Wraps the post thumbnail in an anchor element on index views, or a div
- * element when on single views.
- *
- * Create your own twentysixteen_post_thumbnail() function to override in a child theme.
- *
- * @since Twenty Sixteen 1.0
- */
-function twentysixteen_post_thumbnail() {
-	if ( post_password_required() || is_attachment() || ! has_post_thumbnail() ) {
-		return;
-	}
-
-	if ( is_singular() ) :
-	?>
-
-	<div class="post-thumbnail">
-		<?php the_post_thumbnail(); ?>
-	</div><!-- .post-thumbnail -->
-
-	<?php else : ?>
-
-	<a class="post-thumbnail" href="<?php the_permalink(); ?>" aria-hidden="true">
-		<?php the_post_thumbnail( 'post-thumbnail', array( 'alt' => the_title_attribute( 'echo=0' ) ) ); ?>
-	</a>
-
-	<?php endif; // End is_singular()
-}
-endif;
 
 if ( ! function_exists( 'twentysixteen_excerpt' ) ) :
 	/**

@@ -17,31 +17,20 @@ class ReactifyWP {
 		$this->v8->executeString( $server );
 	}
 
-	public function register_template_tag( $tag_name, $tag_function, $on_action = 'reactifywp_render' ) {
-		$app = $this->v8->app;
+	public function register_template_tag( $tag_name, $tag_function, $constant = true, $on_action = 'reactifywp_render' ) {
+		if ( ! $constant && defined( 'REST_REQUEST' ) && REST_REQUEST ) {
+			return;
+		}
+		$context = $this->v8->context;
 
-		$register = function() use ( &$app, $tag_name, $tag_function ) {
+		$register = function() use ( &$context, $tag_name, $tag_function ) {
 			ob_start();
 
 			$tag_function();
 
 			$output = ob_get_clean();
 
-			$app->template_tags[ $tag_name ] = $output;
-		};
-
-		if ( ! empty( $on_action ) ) {
-			add_action( $on_action, $register );
-		} else {
-			$register();
-		}
-	}
-
-	public function register_constant( $constant_name, $constant_function, $on_action = false ) {
-		$app = $this->v8->app;
-
-		$register = function() use ( &$app, $constant_name, $constant_function ) {
-			$app->constants[ $constant_name ] = $constant_function();
+			$context->template_tags[ $tag_name ] = $output;
 		};
 
 		if ( ! empty( $on_action ) ) {
@@ -53,17 +42,18 @@ class ReactifyWP {
 
 	public function setup() {
 		$this->v8 = new \V8Js();
-		$this->v8->app = new stdClass(); // v8js didn't like an array here :(
-		$this->v8->app->template_tags = [];
-		$this->v8->app->constants = [];
-		$this->v8->app->nav_menus = [];
-		$this->v8->app->context = [];
+		$this->v8->context = new stdClass(); // v8js didn't like an array here :(
+		$this->v8->context->template_tags = [];
+		$this->v8->context->route = [];
+		$this->v8->context->posts = [];
+		$this->v8->context->nav_menus = [];
 
 		add_action( 'after_setup_theme', array( $this, 'register_menus' ), 11 );
-		add_action( 'reactifywp_render', array( $this, 'construct_route' ), 11 );
+		add_action( 'reactifywp_render', array( $this, 'setup_route' ), 11 );
+		add_action( 'reactifywp_render', array( $this, 'setup_posts' ), 9 );
 	}
 
-	public function construct_route() {
+	public function setup_route() {
 		$route = [
 			'type'        => null,
 			'object_id'   => null,
@@ -88,7 +78,7 @@ class ReactifyWP {
 
 				if ( is_author() ) {
 					$route['object_type'] = 'author';
-				} elseif ( is_post_type() ) {
+				} elseif ( is_post_type_archive() ) {
 					$route['object_type'] = $object->name;
 				} elseif ( is_tax() ) {
 					$route['object_type'] = $object->taxonomy;
@@ -96,7 +86,7 @@ class ReactifyWP {
 			}
 		}
 
-		$this->v8->app->context['route'] = $route;
+		$this->v8->context->route = $route;
 	}
 
 	public function register_menus() {
@@ -124,8 +114,29 @@ class ReactifyWP {
 				}
 			}
 
-			$this->v8->app->nav_menus[ $location ] = $menu;
+			$this->v8->context->nav_menus[ $location ] = $menu;
 		}
+	}
+
+	public function setup_posts() {
+		$GLOBALS['wp_the_query']->query( [] );
+
+		$this->v8->context->posts = $GLOBALS['wp_the_query']->posts;
+
+		foreach ( $this->v8->context->posts as $key => $post ) {
+			$this->v8->context->posts[ $key ]->the_title = apply_filters( 'the_title', $post->post_title );
+			$this->v8->context->posts[ $key ]->the_content = apply_filters( 'the_content', $post->post_content );
+			$this->v8->context->posts[ $key ]->post_class = get_post_class( '', $post->ID );
+		}
+	}
+
+	public function setup_api() {
+		require_once __DIR__ . '/class-reactify-api.php';
+
+		add_action( 'rest_api_init', function() {
+			$reactify_api = new ReactifyWP_API();
+			$reactify_api->register_routes();
+		} );
 	}
 
 	public static function instance() {
@@ -134,15 +145,10 @@ class ReactifyWP {
 		if ( empty( $instance ) ) {
 			$instance = new self();
 			$instance->setup();
+			$instance->setup_api();
 		}
 
 		return $instance;
 	}
 }
-
-require_once __DIR__ . '/class-reactify-api.php';
-add_action( 'rest_api_init', function () {
-	$reactify_api = new ReactifyWP_API();
-	$reactify_api->register_routes();
-} );
 

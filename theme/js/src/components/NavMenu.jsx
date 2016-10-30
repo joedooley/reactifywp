@@ -30,7 +30,7 @@ class NavMenu extends React.Component {
             );
         }
 
-    	let menuComponent = PHP.app.$nav_menus[this.props.location].map(processMenuItem);
+    	let menuComponent = PHP.context.$nav_menus[this.props.location].map(processMenuItem);
 
         return (
             <ul className="menu">

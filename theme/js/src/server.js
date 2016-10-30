@@ -11,7 +11,7 @@ const store = createStore(reducer);
 
 store.dispatch({
 	type: 'SET_ROUTE',
-	route: PHP.app.$context.route
+	route: PHP.context.$route
 });
 
 print(ReactDOMServer.renderToString(

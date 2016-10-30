@@ -25,7 +25,36 @@ class ReactifyWP_API extends WP_REST_Controller {
 	}
 
 	public function get_route() {
-		return 'sdfsdf';
+		$type = ( empty( $_GET['type'] ) ) ? 'home' : $_GET['type'];
+		$object_type = ( empty( $_GET['object_type'] ) ) ? null : $_GET['object_type'];
+		$object_id = ( empty( $_GET['object_id'] ) ) ? null : $_GET['object_id'];
+
+		add_action( 'parse_query', function( $query ) use ( $type ) {
+			if ( 'home' === $type ) {
+				$query->is_home = true;
+
+				if ( 'page' == get_option('show_on_front') && get_option('page_on_front') ) {
+					$qv['page_id'] = get_option('page_on_front');
+					$query->is_page = true;
+					$query->is_posts_page = false;
+				} else {
+					$this->is_page = false;
+					$query->is_posts_page = true;
+				}
+			}
+		} );
+
+		$GLOBALS['wp_the_query'] = new WP_Query();
+
+		$GLOBALS['wp_query'] = $GLOBALS['wp_the_query'];
+
+		do_action( 'reactifywp_render' );
+
+		ReactifyWP::instance()->setup_posts();
+
+		$output = ReactifyWP::instance()->v8->context;
+
+		return $output;
 	}
 
 	/**
