@@ -10,7 +10,7 @@ class ReactifyWP {
 
 		$server = file_get_contents( __DIR__ . '/../js/server.js');
 
-		$this->v8->executeString( $server );
+		$this->v8->executeString( $server, V8Js::FLAG_FORCE_ARRAY );
 
 		exit;
 	}
@@ -41,7 +41,7 @@ class ReactifyWP {
 	public function register_post_tag( $tag_name, $tag_function ) {
 		$context = $this->v8->context;
 
-		add_action( 'reactifywp_register_post_tags', function( $post ) use ( $tag_function, $tag_name ) {
+		add_filter( 'reactifywp_register_post_tags', function( $post ) use ( $tag_function, $tag_name ) {
 			global $post;
 			setup_postdata( $post );
 
@@ -52,6 +52,8 @@ class ReactifyWP {
 			wp_reset_postdata();
 
 			$post->{$tag_name} = ob_get_clean();
+
+			return $post;
 		} );
 	}
 
@@ -144,7 +146,26 @@ class ReactifyWP {
 				}
 			}
 
+			// Convert to arrays
+			foreach ( $menu as $key => $menu_item ) {
+				$menu[ $key ] = $this->_convert_to_arrays( $menu_item );
+			}
+
 			$this->v8->context->nav_menus[ $location ] = $menu;
+		}
+	}
+
+	private function _convert_to_arrays( $menu_item ) {
+		$menu_item = (array) $menu_item;
+
+		if ( ! empty( $menu_item['children'] ) ) {
+			foreach ( $menu_item['children'] as $child_key => $child_item ) {
+				$menu_item['children'][ $child_key ] = $this->_convert_to_arrays( $child_item );
+			}
+
+			return $menu_item;
+		} else {
+			return $menu_item;
 		}
 	}
 
@@ -159,7 +180,7 @@ class ReactifyWP {
 			$this->v8->context->posts[ $key ]->post_class = get_post_class( '', $post->ID );
 			$this->v8->context->posts[ $key ]->permalink = get_permalink( $post->ID );
 
-			do_action( 'reactifywp_register_post_tags', $this->v8->context->posts[ $key ] );
+			$this->v8->context->posts[ $key ] = (array) apply_filters( 'reactifywp_register_post_tags', $this->v8->context->posts[ $key ] );
 		}
 	}
 

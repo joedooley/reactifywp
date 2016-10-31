@@ -2,8 +2,8 @@
 
 import React from 'react';
 import ReactDOMServer from 'react-dom/server';
-import Html from './components/Html.jsx';
 import reducer from './reducer';
+import App from './components/App.jsx';
 import { createStore } from 'redux';
 import { Provider } from 'react-redux';
 
@@ -18,8 +18,20 @@ store.dispatch({
 	sidebars: PHP.context.$sidebars,
 });
 
-print(ReactDOMServer.renderToString(
-	<Provider store={store}>
-		<Html />
-	</Provider>
+const clientUrl = PHP.context.$template_tags.stylesheet_directory_url + '/js/client.js'
+
+print(ReactDOMServer.renderToStaticMarkup(
+	<html>
+        <head dangerouslySetInnerHTML={{__html: PHP.context.$template_tags.wp_head}}>
+        </head>
+        <body className={PHP.context.$template_tags.get_body_class}>
+        	<div className="reactifywp-app-container">
+        		<Provider store={store}>
+					<App />
+				</Provider>
+            </div>
+
+			<script src={clientUrl}></script>
+        </body>
+    </html>
 ));

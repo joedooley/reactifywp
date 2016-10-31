@@ -38,7 +38,6 @@ class NavMenu extends React.Component {
         }
 
     	let menuComponent = this.props.nav_menus[this.props.location].map(processMenuItem);
-
         return (
             <ul className={this.props.className}>
             	{menuComponent}
