@@ -19,40 +19,7 @@ ReactifyWP::instance()->register_template_tag( 'twentysixteen_the_custom_logo', 
 	}
 } );
 
-ReactifyWP::instance()->register_template_tag( 'twentysixteen_post_thumbnail', function() {
-	if ( post_password_required() || is_attachment() || ! has_post_thumbnail() ) {
-		return;
-	}
-
-	if ( is_singular() ) :
-	?>
-
-	<div class="post-thumbnail">
-		<?php the_post_thumbnail(); ?>
-	</div><!-- .post-thumbnail -->
-
-	<?php else : ?>
-
-	<a class="post-thumbnail" href="<?php the_permalink(); ?>" aria-hidden="true">
-		<?php the_post_thumbnail( 'post-thumbnail', array( 'alt' => the_title_attribute( 'echo=0' ) ) ); ?>
-	</a>
-
-	<?php endif; // End is_singular()
-}, false );
-
-ReactifyWP::instance()->register_template_tag( 'twentysixteen_credits', function() {
-	do_action( 'twentysixteen_credits' );
-} );
-
-if ( ! function_exists( 'twentysixteen_entry_meta' ) ) :
-/**
- * Prints HTML with meta information for the categories, tags.
- *
- * Create your own twentysixteen_entry_meta() function to override in a child theme.
- *
- * @since Twenty Sixteen 1.0
- */
-function twentysixteen_entry_meta() {
+ReactifyWP::instance()->register_post_tag( 'twentysixteen_entry_meta', function() {
 	if ( 'post' === get_post_type() ) {
 		$author_avatar_size = apply_filters( 'twentysixteen_author_avatar_size', 49 );
 		printf( '<span class="byline"><span class="author vcard">%1$s<span class="screen-reader-text">%2$s </span> <a class="url fn n" href="%3$s">%4$s</a></span></span>',
@@ -85,8 +52,32 @@ function twentysixteen_entry_meta() {
 		comments_popup_link( sprintf( __( 'Leave a comment<span class="screen-reader-text"> on %s</span>', 'twentysixteen' ), get_the_title() ) );
 		echo '</span>';
 	}
-}
-endif;
+} );
+
+ReactifyWP::instance()->register_template_tag( 'twentysixteen_post_thumbnail', function() {
+	if ( post_password_required() || is_attachment() || ! has_post_thumbnail() ) {
+		return;
+	}
+
+	if ( is_singular() ) :
+	?>
+
+	<div class="post-thumbnail">
+		<?php the_post_thumbnail(); ?>
+	</div><!-- .post-thumbnail -->
+
+	<?php else : ?>
+
+	<a class="post-thumbnail" href="<?php the_permalink(); ?>" aria-hidden="true">
+		<?php the_post_thumbnail( 'post-thumbnail', array( 'alt' => the_title_attribute( 'echo=0' ) ) ); ?>
+	</a>
+
+	<?php endif; // End is_singular()
+}, false );
+
+ReactifyWP::instance()->register_template_tag( 'twentysixteen_credits', function() {
+	do_action( 'twentysixteen_credits' );
+} );
 
 if ( ! function_exists( 'twentysixteen_entry_date' ) ) :
 /**

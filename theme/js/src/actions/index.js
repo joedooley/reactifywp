@@ -1,3 +1,3 @@
 'use strict';
 
-export const setRoute = route => ({ type: 'SET_ROUTE', route });
+export const setContext = (route, template_tags, nav_menus, sidebars) => ({ type: 'SET_ROUTE', route, template_tags, nav_menus, sidebars });

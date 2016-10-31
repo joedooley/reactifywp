@@ -1,2 +1,0 @@
-<?php
-ReactifyWP::instance()->render();

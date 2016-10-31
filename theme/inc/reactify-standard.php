@@ -20,6 +20,10 @@ ReactifyWP::instance()->register_template_tag( 'home_url', function() {
 	echo home_url();
 } );
 
+ReactifyWP::instance()->register_template_tag( 'stylesheet_directory_url', function() {
+	echo get_stylesheet_directory_uri();
+} );
+
 ReactifyWP::instance()->register_template_tag( 'bloginfo_name', function() {
 	bloginfo( 'name' );
 } );

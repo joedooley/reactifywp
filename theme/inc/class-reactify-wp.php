@@ -5,16 +5,14 @@ class ReactifyWP {
 
 	public function __construct() { }
 
-	public function create_context() {
-
-	}
-
 	public function render() {
 		do_action( 'reactifywp_render' );
 
 		$server = file_get_contents( __DIR__ . '/../js/server.js');
 
 		$this->v8->executeString( $server );
+
+		exit;
 	}
 
 	public function register_template_tag( $tag_name, $tag_function, $constant = true, $on_action = 'reactifywp_render' ) {
@@ -40,6 +38,23 @@ class ReactifyWP {
 		}
 	}
 
+	public function register_post_tag( $tag_name, $tag_function ) {
+		$context = $this->v8->context;
+
+		add_action( 'reactifywp_register_post_tags', function( $post ) use ( $tag_function, $tag_name ) {
+			global $post;
+			setup_postdata( $post );
+
+			ob_start();
+
+			$tag_function();
+
+			wp_reset_postdata();
+
+			$post->{$tag_name} = ob_get_clean();
+		} );
+	}
+
 	public function setup() {
 		$this->v8 = new \V8Js();
 		$this->v8->context = new stdClass(); // v8js didn't like an array here :(
@@ -47,13 +62,16 @@ class ReactifyWP {
 		$this->v8->context->route = [];
 		$this->v8->context->posts = [];
 		$this->v8->context->nav_menus = [];
+		$this->v8->context->sidebars = [];
 
 		add_action( 'after_setup_theme', array( $this, 'register_menus' ), 11 );
-		add_action( 'reactifywp_render', array( $this, 'setup_route' ), 11 );
-		add_action( 'reactifywp_render', array( $this, 'setup_posts' ), 9 );
+		add_action( 'reactifywp_render', array( $this, 'register_route' ), 11 );
+		add_action( 'reactifywp_render', array( $this, 'register_posts' ), 9 );
+		add_action( 'reactifywp_render', array( $this, 'register_sidebars' ), 9 );
+		add_action( 'template_redirect', array( $this, 'render' ) );
 	}
 
-	public function setup_route() {
+	public function register_route() {
 		$route = [
 			'type'        => null,
 			'object_id'   => null,
@@ -89,6 +107,18 @@ class ReactifyWP {
 		$this->v8->context->route = $route;
 	}
 
+	public function register_sidebars() {
+		global $wp_registered_sidebars;
+
+		foreach ( $wp_registered_sidebars as $sidebar ) {
+			ob_start();
+
+			dynamic_sidebar( $sidebar['id'] );
+
+			$this->v8->context->sidebars[ $sidebar['id'] ] = ob_get_clean();
+		}
+	}
+
 	public function register_menus() {
 		$menus = get_nav_menu_locations();
 
@@ -118,7 +148,7 @@ class ReactifyWP {
 		}
 	}
 
-	public function setup_posts() {
+	public function register_posts() {
 		$GLOBALS['wp_the_query']->query( [] );
 
 		$this->v8->context->posts = $GLOBALS['wp_the_query']->posts;
@@ -127,6 +157,9 @@ class ReactifyWP {
 			$this->v8->context->posts[ $key ]->the_title = apply_filters( 'the_title', $post->post_title );
 			$this->v8->context->posts[ $key ]->the_content = apply_filters( 'the_content', $post->post_content );
 			$this->v8->context->posts[ $key ]->post_class = get_post_class( '', $post->ID );
+			$this->v8->context->posts[ $key ]->permalink = get_permalink( $post->ID );
+
+			do_action( 'reactifywp_register_post_tags', $this->v8->context->posts[ $key ] );
 		}
 	}
 

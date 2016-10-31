@@ -2,7 +2,7 @@
 
 import React from 'react';
 import ReactDOMServer from 'react-dom/server';
-import App from './components/App.jsx';
+import Html from './components/Html.jsx';
 import reducer from './reducer';
 import { createStore } from 'redux';
 import { Provider } from 'react-redux';
@@ -10,12 +10,16 @@ import { Provider } from 'react-redux';
 const store = createStore(reducer);
 
 store.dispatch({
-	type: 'SET_ROUTE',
-	route: PHP.context.$route
+	type: 'SET_CONTEXT',
+	route: PHP.context.$route,
+	posts: PHP.context.$posts,
+	template_tags: PHP.context.$template_tags,
+	nav_menus: PHP.context.$nav_menus,
+	sidebars: PHP.context.$sidebars,
 });
 
 print(ReactDOMServer.renderToString(
 	<Provider store={store}>
-		<App />
+		<Html />
 	</Provider>
 ));

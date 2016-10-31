@@ -3,25 +3,32 @@
 import React from 'react';
 
 class NavLink extends React.Component {
+	navigater() {
+		console.log('test');
+	}
+
 	render() {
-		<a href={this.props.url}>
-			{this.props.title}
-		</a>
+		return (
+			<a onClick={this.navigater}>
+				{this.props.title}
+			</a>
+		);
 	}
 }
 
 class NavMenu extends React.Component {
     render() {
-    	function processMenuItem(menuItem) {
+    	function processMenuItem(menuItem, key) {
     		let classes = 'menu-item';
-    		if (menuItem.children.length) {
+    		if (menuItem.children && menuItem.children.length) {
     			classes += ' menu-item-has-children';
     		}
-            return (
-                <li className={classes}>
-                    <a href={menuItem.url}>{menuItem.title}</a>
 
-                    {menuItem.children.length ?
+            return (
+                <li key={key} className={classes}>
+                    <NavLink title={menuItem.title} url={menuItem.url} />
+
+                    {menuItem.children && menuItem.children.length ?
                     	<ul className="sub-menu">
                     		{menuItem.children.map(processMenuItem)}
                     	</ul>
@@ -30,10 +37,10 @@ class NavMenu extends React.Component {
             );
         }
 
-    	let menuComponent = PHP.context.$nav_menus[this.props.location].map(processMenuItem);
+    	let menuComponent = this.props.nav_menus[this.props.location].map(processMenuItem);
 
         return (
-            <ul className="menu">
+            <ul className={this.props.className}>
             	{menuComponent}
             </ul>
         );
